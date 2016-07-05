@@ -3,5 +3,6 @@
 
 b {
 	color: #ccc;
+	background-color: #000;
 	@include img-example('s1-1');
 }
