@@ -1,7 +1,10 @@
 @charset "utf-8";
 @import "../util/mixin";
 
-b {
+.b {
+	display: inline-block;
 	color: #ccc;
+	display: flex;
+	flex: 1;
 	@include img-example('s1-1');
 }

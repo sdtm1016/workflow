@@ -73,19 +73,19 @@ bs.watch("src/sass/**/*.scss", {ignored: sassWatchIgnore}, function (event, file
 		console.log(colors.log('[SASS]=====> 编译 SASS 文件: '+file));
 
 		// compass
-		compass.compile({cwd: __dirname}, function(err, stdout, stderr) {
+		compass.compile(function(err, stdout, stderr) {
 			if (err) {
 				console.log(colors.warn(stdout))
 			}
 			// autoprefixer
-			// var data = fs.readFileSync(PWD + path.sep + distFile, "utf-8");
-			// postcss([autoprefixer({browsers: ['>5%']})]).process(data).then(function (result) {
-			// 	result.warnings().forEach(function (warn) {
-			// 	  console.log(colors.warn(warn.toString()));
-			// 	});
-			// 	console.log(colors.log('[AutoPrefixer]=====> 执行 Autoprefixer: '+distFile));
-			// 	fs.writeFileSync(distFile, result);
-			// });
+			var data = fs.readFileSync(PWD + path.sep + distFile, "utf-8");
+			postcss([autoprefixer({browsers: ['>5%']})]).process(data).then(function (result) {
+				result.warnings().forEach(function (warn) {
+				  console.log(colors.warn(warn.toString()));
+				});
+				console.log(colors.log('[AutoPrefixer]=====> 执行 Autoprefixer: '+distFile));
+				fs.writeFileSync(distFile, result);
+			});
 			bs.reload("*.css")
 		})
   }
