@@ -12,7 +12,7 @@
  * 	 8、设计稿对比功能
  *	 9、设计稿 & 前端 Checklist 展示
  *   10、改动文件增加哈希值
- *
+ *   11、SASS 和 JS 启动 Soucemap
  */
 
 'use strict'
@@ -66,23 +66,26 @@ var sassWatchIgnore = [
 	'!_mixin.scss'
 ]
 
-bs.watch("src/sass/**/*.scss", {ignored: sassIgnore}, function (event, file) {
+bs.watch("src/sass/**/*.scss", {ignored: sassWatchIgnore}, function (event, file) {
   if (event === "add" || event === "change") {	// event: add change unlink
 		var subFolder = path.dirname(file).split('src'+path.sep+'sass')[1] ? path.dirname(file).split('src'+path.sep+'sass')[1] : '';
 		var distFile = path.join('dist','css',subFolder, path.parse(file).name+'.css');
 		console.log(colors.log('[SASS]=====> 编译 SASS 文件: '+file));
-		compass.compile(function(err, stdout, stderr) {
+
+		// compass
+		compass.compile({cwd: __dirname}, function(err, stdout, stderr) {
 			if (err) {
-				console.log(colors.warn(err))
+				console.log(colors.warn(stdout))
 			}
-			var data = fs.readFileSync(PWD + path.sep + distFile, "utf-8");
-			postcss([autoprefixer({browsers: ['>5%']})]).process(data).then(function (result) {
-				result.warnings().forEach(function (warn) {
-				  console.log(colors.warn(warn.toString()));
-				});
-				console.log(colors.log('[AutoPrefixer]=====> 执行 Autoprefixer: '+distFile));
-				fs.writeFileSync(distFile, result);
-			});
+			// autoprefixer
+			// var data = fs.readFileSync(PWD + path.sep + distFile, "utf-8");
+			// postcss([autoprefixer({browsers: ['>5%']})]).process(data).then(function (result) {
+			// 	result.warnings().forEach(function (warn) {
+			// 	  console.log(colors.warn(warn.toString()));
+			// 	});
+			// 	console.log(colors.log('[AutoPrefixer]=====> 执行 Autoprefixer: '+distFile));
+			// 	fs.writeFileSync(distFile, result);
+			// });
 			bs.reload("*.css")
 		})
   }
@@ -113,26 +116,23 @@ bs.watch("src/js/**/*.js", function (event, file) {
 	var subFolder = path.dirname(file).split('src'+path.sep+'js')[1] ? path.dirname(file).split('src'+path.sep+'js')[1] : '';
 	var distFile = path.join('dist','js',subFolder, path.basename(file));
 
-	if (event === "add") {
+	if (event === "add" || event === "change") {
 		fs.copy(file, distFile, {replace: true}, function (err) {
 		  if (err) { throw err; }
 			console.log(colors.log('[JS]=====> 复制 JS 文件至: '+distFile))
 		});
-	}
-	else if (event === "change") {
-		fs.copy(file, distFile, {replace: true}, function (err) {
-		  if (err) { throw err; }
-			console.log(colors.log('[JS]=====> 编译 JS 文件至: '+distFile))
-		});
 		// console.log(colors.log('LOG=====> 压缩 JS 文件至: '+distFile));
 		// var result = uglifyJS.minify(file, {compress: {dead_code: true}});
 		// fs.writeFileSync(distFile, result.code);
-  }
+	}
 	// else if (event === 'unlink') {
 	// 	fs.unlinkSync(distFile);
 	// 	console.log(colors.log('[JS]=====> 删除 JS 文件: '+distFile));
 	// }
 })
+
+
+
 
 
 var tinify = require("tinify");
